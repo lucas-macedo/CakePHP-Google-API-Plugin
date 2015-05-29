@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Cakephp-google-api-plugin by luuckx2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Cakephp-google-api-plugin</h1>
+      <h2 class="project-tagline">Api do Google para CakePHP que permite facilmente ler dados do Google</h2>
+      <a href="https://github.com/luuckx2/CakePHP-Google-API-Plugin" class="btn">View on GitHub</a>
+      <a href="https://github.com/luuckx2/CakePHP-Google-API-Plugin/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/luuckx2/CakePHP-Google-API-Plugin/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h3>
+<a id="requerido" class="anchor" href="#requerido" aria-hidden="true"><span class="octicon octicon-link"></span></a>Requerido</h3>
+
+<ul>
+<li><a href="https://github.com/cakephp/cakephp">CakePHP 2.x</a></li>
+</ul>
+
+<h3>
+<a id="criando-e-configurando-o-google-console" class="anchor" href="#criando-e-configurando-o-google-console" aria-hidden="true"><span class="octicon octicon-link"></span></a>Criando e Configurando o <strong>Google Console</strong>.</h3>
+
+<p>Antes de começarmos a experimentar esta linda biblioteca do <strong>Google</strong> precisamos criar uma conta no google (se é que é preciso dizer isso) e acessar o <a href="https://console.developers.google.com/">Google Console</a>.
+Dentro do <strong>Google Console</strong> Iremos em:</p>
+
+<ul>
+<li>Criar Projeto (E crie um projeto)</li>
+<li>Projeto Criado vá em <strong>APIs e Autenticação &gt; APIS</strong> (Procure por <strong>Analytics API</strong> que o  usaremos de exemplo)</li>
+<li>Escolha o Analytics API e clique quem <strong>ATIVAR</strong>
+</li>
+<li>Agora vá em APIs e vAutenticação &gt; Credenciais &gt; Criar um Novo ID Client**</li>
+<li>Selecione o tipo Conta Serviço e <strong>Criar ID Client</strong>
+</li>
+<li>Será gerada uma <strong>chave P12</strong> baixe e guarde pois ela sera usada em todos os projetos com o Google Api</li>
+<li>Note que foi gerado <strong>ID do cliente, Endereço de e-mail, Impressões do certificado, Chaves P12 e JSON</strong>.</li>
+<li>Salve todas essas informações para serem utilizadas mais tarde e feche o Google Console.</li>
+</ul>
+
+<h3>
+<a id="configurando-plugin" class="anchor" href="#configurando-plugin" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configurando Plugin</h3>
+
+<p>O Plugin é bem simples, dando em consideração que eu desenvolvi apenas o esqueleto da coisa, porem funcionando! =)
+Faça o checkout do plugin em app/Plugin</p>
+
+<pre><code>$ git clone git@github.com:luuckx2/CakePHP-Google-API-Plugin.git GoogleApi
+</code></pre>
+
+<p>Após concluir o clone do repositório vamos as configurações, você precisa definir as informações do Google Console no Plugin.
+1. Certifique-se que sua aplicação está chamando o Plugin use :</p>
+
+<pre><code>CakePlugin::loadAll();
+// ou
+CakePlugin::load('GoogleApi'); 
+</code></pre>
+
+<ol>
+<li>Copie a Chave P12 baixada do Google Para app/Plugin/GoogleApi e deixe na Raiz do Plugin mesmo.</li>
+<li>Vá em GoogleApi/Config e abra o arquivo Core.php</li>
+<li>Edite de acordo com as informações obtidas do Google Console</li>
+</ol>
+
+<pre><code>$config = array('GoogleApi'=&gt;array(
+
+    // Dados do Cliente Google Console
+    'client' =&gt; array(
+        'ApplicationName' =&gt; 'ApplicationName',
+        'client_id' =&gt; 'xxxxxxxxxxxxxxxxxx.apps.googleusercontent.com',
+        'email_address' =&gt; 'xxxxxxxxxxxxxxx@developer.gserviceaccount.com',
+        'key_file_location' =&gt; APP . 'Plugin' . DS . 'GoogleApi' . DS . 'messes.p12',
+    ),
+));
+</code></pre>
+
+<ol>
+<li><p>Para utilizar o <strong>Google Analytics</strong> é preciso mais uma configuração. 
+Sabe aquele e-mail que o Google Console nos forneceu? Precisamos adiciona-lo na <strong>lista de usuários</strong> na conta do Google Analytics que desejamos obter dados. Isso mesmo! Como administrador ( All Permissions).
+Caso não seja utilizado o Google Analytics Ignore.</p></li>
+<li><p>Agora vamos testar!
+No AppController da sua aplicação Adicione</p></li>
+</ol>
+
+<pre><code>public $components = array('GoogleApi.GoogleApi');
+</code></pre>
+
+<p>7 . E em algum controller de sua preferencia execute</p>
+
+<p>$analytics = $this-&gt;GoogleApi-&gt;Analytics();</p>
+
+<pre><code>// pega o primeiro profile_id da conta do Google Analytics, caso saiba o id é só inserir manualmente (string)
+$profile_id = $this-&gt;GoogleApi-&gt;getFirstprofileAnalyticsId($analytics);
+$results = $this-&gt;GoogleApi-&gt;getMonthsVisits($analytics,$profile_id);
+pr($results);
+</code></pre>
+
+<p>Kabum! Se tudo ocorrer como planejado voce obterá a lista de visitas dos últimos 12 messes.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/luuckx2/CakePHP-Google-API-Plugin">Cakephp-google-api-plugin</a> is maintained by <a href="https://github.com/luuckx2">luuckx2</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
+
